@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {font-family:Roboto,Arial,sans-serif;padding:16px;}
+      label {display:block;margin:8px 0 4px;}
+      input[type=text], input[type=number] {width:100%;padding:6px;}
+      button {margin-top:12px;padding:6px 12px;}
+    </style>
+  </head>
+  <body>
+    <h3>Add Nearby Businesses</h3>
+    <label>Business keyword</label>
+    <input type="text" id="term" placeholder="coffee, gym, bakery">
+    <label>ZIP code</label>
+    <input type="text" id="zip" maxlength="5" placeholder="10989">
+    <label>Max results (1-60)</label>
+    <input type="number" id="max" value="20" min="1" max="60">
+    <button onclick="submitForm()">Fetch &amp; Append</button>
+    <div id="msg" style="margin-top:12px;color:green;"></div>
+
+    <script>
+      function submitForm(){
+        const data = {
+          term: document.getElementById('term').value.trim(),
+          zip : document.getElementById('zip').value.trim(),
+          maxResults: Number(document.getElementById('max').value)||20
+        };
+        if(!data.term || !/^\d{5}$/.test(data.zip)){
+          alert('Please enter a keyword and valid 5-digit ZIP.');
+          return;
+        }
+        google.script.run.withSuccessHandler(msg=>{
+          document.getElementById('msg').textContent = msg;
+        }).withFailureHandler(err=>{
+          alert(err.message || err);
+        }).addNearbyBusinesses(data);
+      }
+    </script>
+  </body>
+</html>
